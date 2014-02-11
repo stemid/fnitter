@@ -1,0 +1,16 @@
+{
+  "name": "fnitter",
+  "version": "0.0.1",
+  "description": "Takes screenshots of twitter feeds.",
+  "main": "index.js",
+  "dependencies": {
+    "crypto": "~0.0.3",
+    "phantomjs": "~1.9.7-1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stefan Midjich",
+  "license": "BSD"
+}
