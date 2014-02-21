@@ -29,7 +29,7 @@ Kräver node och npm, går att installera från källkod hämtad på deras [gith
 
 Installera PhantomJS globalt så här. 
 
-  sudo npm install -g phantomjs
+    sudo npm install -g phantomjs
 
 På Debian blir det rättighetsfel, så det får man fixa i `/usr/local/lib/node_modules`. 
 
