@@ -31,6 +31,6 @@ Installera PhantomJS globalt så här.
 
   sudo npm install -g phantomjs
 
-På Debian blir det rättighetsfel, så det får man fixa i ``/usr/local/lib/node_modules´´. 
+På Debian blir det rättighetsfel, så det får man fixa i `/usr/local/lib/node_modules´. 
 
 
