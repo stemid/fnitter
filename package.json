@@ -12,5 +12,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Stefan Midjich",
-  "license": "BSD"
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stemid/fnitter"
+  },
+  "bugs": {
+    "url": "https://github.com/stemid/fnitter/issues"
+  },
+  "homepage": "https://github.com/stemid/fnitter"
 }

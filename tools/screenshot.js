@@ -1,28 +1,33 @@
 var page = require('webpage').create();
 var sys = require('system');
-var crypto = require('crypto');
 
-var url = '', img_b64 = '', sha1sum = '';
-var hash = crypto.createHash('sha1');
-
-hash.setEncoding('hex');
+var url = '', img_b64 = '', md5sum = '', output_dir = '';
 
 function print_usage () {
-    console.log('Usage: phantomjs screenshot.js <url>');
+  console.log('Usage: phantomjs screenshot.js <url> [output dir]');
 }
 
 if (sys.args.length === 1) {
-    print_usage();
-    phantom.exit();
+  print_usage();
+  phantom.exit();
 } else {
-    url = sys.args[1];
+  url = sys.args[1];
+  output_dir = sys.args[2];
 }
 
 page.open(url, function () {
-    img_b64 = page.renderBase64('png');
-    hash.write(img_b64);
-    hash.end();
-    sha1sum = hash.read();
-    page.render(sha1sum + '_img.png');
+  if (!phantom.injectJs('md5.js')) {
     phantom.exit();
+  }
+  img_b64 = page.renderBase64('png');
+  md5sum = CryptoJS.MD5(img_b64);
+
+  if (output_dir === undefined) {
+    output_file = md5sum + '_img.png';
+  } else {
+    output_file = output_dir + '/' + md5sum + '_img.png';
+  }
+
+  page.render(output_file);
+  phantom.exit();
 });
