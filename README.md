@@ -18,10 +18,11 @@ Samt ett exempel på att använda denna mobul i tools/screenshot.py.
 
 # Vägkarta
 
-  * Asynkron jobbhantering med celery, redis som kö och report-backend
-  * WSGI API med bottle.py för att skicka in nya jobb till celery, samt hantera andra saker med de lagrade bilderna och jobben
-  * Cronjobb som skickar in alla de lagrade jobben från databas och skickar dem till celery regelbundet
-  * Angular.js gränssnitt
+  * tweepy listener som lyssnar efter ett antal twitter användar IDn
+  * on\_data i tweepy listener skapar ett celeryjobb att ta en skärmdump
+  * celeryjobbet (task) lanserar Driver.screenshot
+  * celeryjobbet lagrar resultatet av Driver.screenshot i DB
+  * Bootstrap3 webbgränssnitt till detta
 
 # PhantomJS Installation
 
