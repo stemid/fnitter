@@ -1,0 +1,12 @@
+[twitter]
+consumer_key: # API Key
+consumer_secret: # API Secret
+oauth_token: # Access token
+oauth_secret: # Access token secret
+
+# See DB schema in tools/fnitter.pgsql
+[db]
+hostname: 
+username: 
+database: 
+password: 
