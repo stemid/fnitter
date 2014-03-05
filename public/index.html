@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="sv" ng-app="fnitterApp">
+  <head>
+    <meta charset="utf-8">
+    <title>Fnitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/fnitter.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="/static/js/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/angular-1.2.14.min.js"></script>
+    <script type="text/javascript" src="/static/js/angular-route-1.2.14.min.js"></script>
+    <script type="text/javascript" src="/static/js/ui-bootstrap-0.10.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/ui-bootstrap-tpls-0.10.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/fnitter.js"></script>
+    <script type="text/javascript" src="/static/js/controllers.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="content-wrap" class="row row-offcanvas row-offcanvas-left">
+
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+          <div class="list-group">
+            <a href="#/" class="list-group-item">Aktivitet</a>
+            <a href="#/new" class="list-group-item">Lägg till nytt</a>
+            <a href="#/manage" class="list-group-item">Hantera konton</a>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-9">
+          <p class="pull-left visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Meny <span class="glyphicon glyphicon-forward"></span></button>
+          </p>
+          <div class="row" ng-view>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

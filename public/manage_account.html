@@ -1,0 +1,29 @@
+<h1>Hantera konton</h1>
+
+<table
+  ng-init="sortKey='user_id'; reverse=!reverse"
+  id="accounts-list"
+  class="table table-hover">
+  <thead>
+    <tr>
+      <td>
+        <a href="" ng-click="sortKey = 'user_id'; reverse=!reverse">ID</a>
+      </td>
+      <td>
+        <a href="" ng-click="sortKey = 'screen_name'; reverse=!reverse">Användarnamn</a>
+      </td>
+      <td class="delete-column">Radera</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="account in accounts | filter:query | orderBy:sortKey:reverse">
+      <td>{{ account.user_id }}</td>
+      <td>{{ account.screen_name }}</td>
+      <td class="delete-column">
+        <button ng-click="delete(account.user_id)" class="btn btn-primary btn-xs">
+          <i class="glyphicon glyphicon-trash"></i>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
