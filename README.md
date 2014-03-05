@@ -16,6 +16,15 @@ Har även gjort en modul för att kunna använda ett sådant PhantomJS-skript, i
 
 Samt ett exempel på att använda denna mobul i tools/screenshot.py. 
 
+# Beroenden
+
+  * node.js
+  * PhantomJS
+  * sh
+  * tweepy
+  * celery
+  * http://idfromuser.com/
+
 # Vägkarta
 
   * tweepy listener som lyssnar efter ett antal twitter användar IDn
