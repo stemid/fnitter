@@ -1,3 +1,7 @@
+[worker]
+# This is where all screenshots are stored. Should probably be an absolut path.
+media_path: media/
+
 [twitter]
 consumer_key: # API Key
 consumer_secret: # API Secret
