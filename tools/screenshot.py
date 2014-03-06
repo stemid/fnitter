@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 parentdir = path.dirname(path.dirname(path.abspath(__file__)))
 pythonpath.insert(0,parentdir)
 
-from Driver.Screenshot import Screenshot
+from Driver.screenshot import Screenshot
 
 parser = ArgumentParser(
     description = 'Take twitter screenshots',
