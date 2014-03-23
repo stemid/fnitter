@@ -1,12 +1,19 @@
-[worker]
+[fnitter]
 # This is where all screenshots are stored. Should probably be an absolut path.
 media_path: media/
 
-[twitter]
+# Twitter related settings
 consumer_key: # API Key
 consumer_secret: # API Secret
 oauth_token: # Access token
 oauth_secret: # Access token secret
+
+# This dictates from where the UI can make requests to the API, 
+# and where the API listens.
+ui_url: http://localhost:8001
+host: 0.0.0.0
+port: 8000
+debug: True
 
 # See DB schema in tools/fnitter.pgsql
 [db]
@@ -15,10 +22,3 @@ username:
 database: 
 password: 
 
-# This dictates from where the UI can make requests to the API, 
-# and where the API listens.
-[api]
-ui_url: http://localhost:8001
-host: 0.0.0.0
-port: 8000
-debug: True

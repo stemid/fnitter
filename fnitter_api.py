@@ -1,6 +1,6 @@
 from __future__ import print_function
 from sys import stderr
-from ConfigParser import ConfigParser
+from ConfigParser import SafeConfigParser as ConfigParser
 from json import loads, dumps
 from bottle import route, run, default_app, debug, response, request
 from Driver.twitter import Twitter
@@ -10,10 +10,10 @@ config = ConfigParser()
 config.read('fnitter.cfg')
 
 twitter = Twitter(
-    consumer_key = config.get('twitter', 'consumer_key'),
-    consumer_secret = config.get('twitter', 'consumer_secret'),
-    oauth_token = config.get('twitter', 'oauth_token'),
-    oauth_secret = config.get('twitter', 'oauth_secret')
+    consumer_key = config.get('fnitter', 'consumer_key'),
+    consumer_secret = config.get('fnitter', 'consumer_secret'),
+    oauth_token = config.get('fnitter', 'oauth_token'),
+    oauth_secret = config.get('fnitter', 'oauth_secret')
 )
 
 db = Database(config)
@@ -22,8 +22,14 @@ db = Database(config)
 def enable_cors(fn):
     def _enable_cors(*args, **kw):
         methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-        response.add_header('Access-Control-Allow-Origin', config.get('api', 'ui_url'))
-        response.add_header('Access-Control-Allow-Methods', ', '.join(methods))
+        response.add_header(
+            'Access-Control-Allow-Origin', 
+            config.get('fnitter', 'ui_url')
+        )
+        response.add_header(
+            'Access-Control-Allow-Methods', 
+            ', '.join(methods)
+        )
         #response.add_header('Access-Control-Allow-Headers', 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token')
 
         if request.method != 'OPTIONS':
@@ -105,6 +111,7 @@ def account_add(screen_name):
             dumps(twitter_data)
         )
     except Exception as e:
+        response.status = 500
         return {
             'status': 'Error',
             'message': str(e)
@@ -117,10 +124,10 @@ def account_add(screen_name):
 
 if __name__ == '__main__':
     run(
-        host = config.get('api', 'host'), 
-        port = config.get('api', 'port'),
+        host = config.get('fnitter', 'host'), 
+        port = config.get('fnitter', 'port'),
         debug = True
     )
-    debug(config.get('api', 'debug'))
+    debug(config.get('fnitter', 'debug'))
 else: # Assume WSGI
     application = default_app()

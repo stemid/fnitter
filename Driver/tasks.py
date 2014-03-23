@@ -1,4 +1,4 @@
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import
 from sys import stderr
 from ConfigParser import SafeConfigParser as ConfigParser
 import tweepy
