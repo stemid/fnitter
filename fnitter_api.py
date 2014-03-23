@@ -1,10 +1,12 @@
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 from sys import stderr
 from ConfigParser import SafeConfigParser as ConfigParser
 from json import loads, dumps
-from bottle import route, run, default_app, debug, response, request
+from bottle import post, get, run, default_app, debug, response, request
+from celery.task.control import inspect
 from Driver.twitter import Twitter
 from Driver.database import Database
+from Driver.celery import app
 
 config = ConfigParser()
 config.read('fnitter.cfg')
@@ -36,7 +38,7 @@ def enable_cors(fn):
             return fn(*args, **kw)
     return _enable_cors
 
-@route('/accounts', method='GET')
+@get('/accounts')
 @enable_cors
 def accounts_get():
     response.content_type = 'application/json'
@@ -49,7 +51,7 @@ def accounts_get():
     # Return JSON data in list form
     return dumps({'data': response_list})
 
-@route('/account/<screen_name:re:[a-zA-Z0-9_]{,15}>', method='GET')
+@get('/account/<screen_name:re:[a-zA-Z0-9_]{,15}>')
 @enable_cors
 def account_get(screen_name):
     response.content_type = 'application/json'
@@ -69,7 +71,7 @@ def account_get(screen_name):
         'url': user.url
     }
 
-@route('/account/<screen_name:re:[a-zA-Z0-9_]{,15}>', method='POST')
+@post('/account/<screen_name:re:[a-zA-Z0-9_]{,15}>')
 @enable_cors
 def account_add(screen_name):
     response.content_type = 'application/json'
@@ -120,6 +122,52 @@ def account_add(screen_name):
     return { 
         'status': 'OK',
         'message': 'Account added'
+    }
+
+# Get all celery tasks in a list
+# Get status of a celery task
+@get('/task')
+@get('/task/<task_name>')
+@enable_cors
+def get_task(task_name=None):
+    response.content_type = 'application/json'
+
+    i = inspect()
+    active_tasks = []
+    try:
+        active_tasks = i.active().get(
+            'celery@%s' % config.get('fnitter', 'worker_name')
+        )
+    except Exception as e:
+        response.status = 500
+        return {
+            'status': 'Error',
+            'message': str(e)
+        }
+
+    if not len(active_tasks):
+        response.status = 404
+        return {
+            'status': 'Not found',
+            'message': 'No tasks are running'
+        }
+
+    if task_name is None:
+        return { 
+            'status': 'OK', 
+            'tasks': active_tasks 
+        }
+
+    for task in active_tasks:
+        if task_name == task.name:
+            return { 
+                'status': 'OK',
+                'tasks': [ task ] 
+            }
+
+    return {
+        'status': 'Not found',
+        'message': 'Task not found'
     }
 
 if __name__ == '__main__':
