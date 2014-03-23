@@ -4,7 +4,7 @@ class Screenshot:
     def __init__(self, **kw):
         phantomjs_path = kw.get(
             'phantomjs',
-            '/usr/local/lib/node_modules/phantomjs/'
+            './node_modules/phantomjs/'
         )
         screenshot_script = kw.get(
             'screenshot',
