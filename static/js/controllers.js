@@ -102,3 +102,12 @@ fnitterAppControllers.controller('fnitterManageAccountCtrl', [
     $scope.reload_list();
   }
 ]);
+
+fnitterAppControllers.controller('fnitterManageTasksCtrl', [
+  '$scope',
+  '$http',
+  '$log',
+  
+  function ($scope, $http, $log) {
+  }
+]);

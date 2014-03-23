@@ -38,6 +38,10 @@ fnitterApp.config([
         templateUrl: 'manage_account.html',
         controller: 'fnitterManageAccountCtrl'
     }).
+      when('/tasks', {
+        templateUrl: 'manage_tasks.html',
+        controller: 'fnitterManageTasksCtrl'
+    }).
       otherwise({
         redirectTo: '/'
     });
