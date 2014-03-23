@@ -74,3 +74,12 @@ Här är ett exempel på en nginx konfiguration där fnitter applikationen ligge
             }
         }
     }
+
+# Virtualenv installation
+
+Här är en lista av moduler som jag installerar i virtualenv. 
+
+  * psycopg2
+  * tweepy
+  * celery
+  * bottle
