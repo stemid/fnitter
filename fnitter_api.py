@@ -170,6 +170,56 @@ def get_task(task_name=None):
         'message': 'Task not found'
     }
 
+# Helper function to actually start the task
+def task_follow_accounts(account_list):
+    from Driver.tasks import follow_accounts
+
+# Start celery task
+@post('/task/follow_accounts')
+@enable_cors
+def start_follow_accounts():
+    response.content_type = 'application/json'
+
+    accounts = []
+    for (user_id, account_data) in db:
+        accounts.append(user_id)
+
+    # Check if task is already running, we don't want more than one of these.
+    # Get current list of active tasks
+    active_tasks = []
+    try:
+        active_tasks = i.active().get(
+            'celery@%s' % config.get('fnitter', 'worker_name')
+        )
+    except Exception as e:
+        response.status = 500
+        return {
+            'status': 'Error',
+            'message': str(e)
+        }
+
+    if not len(active_tasks):
+        task_follow_accounts()
+        return {
+            'status': 'OK',
+            'message': 'Task started'
+        }
+
+    # If we have several running tasks, check for its name
+    for task in active_tasks:
+        # If found, return from the loop
+        if task.name == 'Driver.tasks.follow_accounts':
+            return {
+                'status': 'OK',
+                'message': 'Task is already running'
+            }
+    # If not found, start it
+    task_follow_accounts()
+    return {
+        'status': 'OK',
+        'message': 'Task started'
+    }
+
 if __name__ == '__main__':
     run(
         host = config.get('fnitter', 'host'), 
