@@ -1,3 +1,19 @@
+<h1>Övervaka nytt twitterkonto</h1>
+
+<form role="form" ng-submit="new_person()">
+  <div class="form-group">
+    <label for="personTwitterUrl">Twitteradress</label>
+    <input type="text" class="form-control" id="personTwitterUrl" placeholder="https://twitter.com/SixtenNordin" ng-model="person.screen_name">
+    <p class="help-block">Fyll i länken till användarens twitterkonto eller bara deras twitternamn, och tryck sedan på Enter.</p>
+  </div>
+  <button type="submit" class="btn btn-default">Lägg till</button>
+</form>
+
+<div id="post-status" class="alert alert-dismissable fade">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <strong>{{ post_status }}</strong> {{ post_message }}
+</div>
+
 <h1>Hantera konton</h1>
 
 <table
@@ -7,10 +23,14 @@
   <thead>
     <tr>
       <td>
-        <a href="" ng-click="sortKey = 'user_id'; reverse=!reverse">ID</a>
+        <a href="" ng-click="sortKey = 'user_id'; reverse=!reverse">
+          ID <i class="glyphicon glyphicon-sort"></i>
+        </a>
       </td>
       <td>
-        <a href="" ng-click="sortKey = 'screen_name'; reverse=!reverse">Användarnamn</a>
+        <a href="" ng-click="sortKey = 'screen_name'; reverse=!reverse">
+          Användarnamn <i class="glyphicon glyphicon-sort"></i>
+        </a>
       </td>
       <td class="delete-column">Radera</td>
     </tr>
@@ -20,7 +40,7 @@
       <td>{{ account.user_id }}</td>
       <td>{{ account.screen_name }}</td>
       <td class="delete-column">
-        <button ng-click="delete(account.user_id)" class="btn btn-primary btn-xs">
+        <button title="Radera konto {{ account.screen_name }}" ng-click="delete(account.user_id)" class="btn btn-primary btn-xs">
           <i class="glyphicon glyphicon-trash"></i>
         </button>
       </td>

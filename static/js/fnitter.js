@@ -30,10 +30,6 @@ fnitterApp.config([
         templateUrl: 'account_activity.html',
         controller: 'fnitterActivityCtrl'
     }).
-      when('/new', {
-        templateUrl: 'new_account.html',
-        controller: 'fnitterNewAccountCtrl'
-    }).
       when('/manage', {
         templateUrl: 'manage_account.html',
         controller: 'fnitterManageAccountCtrl'

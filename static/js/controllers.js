@@ -12,10 +12,28 @@ fnitterAppControllers.controller('fnitterActivityCtrl', [
     // Make menu button active
     $('.list-group .active').toggleClass('active');
     $('.list-group').find('a[href$="/"]').toggleClass('active');
+
+    $scope.listener_status = function () {
+      $http.get(fnitterSettings.apiUrl + '/task/Driver.tasks.follow_accounts').
+        success(function (data, status) {
+          $log.info(data);
+          return true;
+        }).
+        error(function (data, status) {
+          $log.error(status);
+          return false;
+        });
+    };
+
+    if ($scope.listener_status() === true) {
+      $scope.listener_mode = 'play';
+    } else {
+      $scope.listener_mode = 'stop';
+    }
   }
 ]);
 
-fnitterAppControllers.controller('fnitterNewAccountCtrl', [
+fnitterAppControllers.controller('fnitterManageAccountCtrl', [
   '$scope',
   '$http',
   '$log',
@@ -24,7 +42,22 @@ fnitterAppControllers.controller('fnitterNewAccountCtrl', [
   function ($scope, $http, $log, fnitterSettings) {
     // Make menu button active
     $('.list-group .active').toggleClass('active');
-    $('.list-group').find('a[href$="/new"]').toggleClass('active');
+    $('.list-group').find('a[href$="/manage"]').toggleClass('active');
+
+    $scope.reload_list = function () {
+      $http.get(fnitterSettings.apiUrl + '/accounts').
+        success(function (data, status) {
+          $log.info(data);
+          $scope.accounts = data.data;
+        }).
+        error(function (data, status) {
+          $log.error(data);
+          $log.error(status);
+          $scope.accounts = [];
+        });
+    };
+
+    $scope.reload_list();
 
     // Enable dismissal button in alert
     $('.close').on('click', function () {
@@ -75,39 +108,14 @@ fnitterAppControllers.controller('fnitterNewAccountCtrl', [
   }
 ]);
 
-fnitterAppControllers.controller('fnitterManageAccountCtrl', [
-  '$scope',
-  '$http',
-  '$log',
-  'fnitterSettings',
-
-  function ($scope, $http, $log, fnitterSettings) {
-    // Make menu button active
-    $('.list-group .active').toggleClass('active');
-    $('.list-group').find('a[href$="/manage"]').toggleClass('active');
-
-    $scope.reload_list = function () {
-      $http.get(fnitterSettings.apiUrl + '/accounts').
-        success(function (data, status) {
-          $log.info(data);
-          $scope.accounts = data.data;
-        }).
-        error(function (data, status) {
-          $log.error(data);
-          $log.error(status);
-          $scope.accounts = [];
-        });
-    };
-
-    $scope.reload_list();
-  }
-]);
-
 fnitterAppControllers.controller('fnitterManageTasksCtrl', [
   '$scope',
   '$http',
   '$log',
   
   function ($scope, $http, $log) {
+    // Make menu button active
+    $('.list-group .active').toggleClass('active');
+    $('.list-group').find('a[href$="/tasks"]').toggleClass('active');
   }
 ]);

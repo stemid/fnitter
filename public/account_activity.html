@@ -1,1 +1,9 @@
-<h1>Senaste uppdateringar</h1>
+<h1>Senaste uppdateringar 
+  <small class="pull-right">
+    <button title="Växla läge på lyssnaren" ng-click="toggle_listener()" class="btn btn-primary btn-xs">
+      <i class="glyphicon glyphicon-{{ $scope.listener_mode }}"></i>
+    </button>
+  </small>
+</h1>
+
+{{ $scope.listener_mode }}
