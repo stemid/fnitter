@@ -159,7 +159,7 @@ def get_task(task_name=None):
         }
 
     for task in active_tasks:
-        if task_name == task.name:
+        if task_name == task.get('name'):
             return { 
                 'status': 'OK',
                 'tasks': [ task ] 
@@ -173,6 +173,7 @@ def get_task(task_name=None):
 # Helper function to actually start the task
 def task_follow_accounts(account_list):
     from Driver.tasks import follow_accounts
+    follow_accounts.apply_async((account_list,))
 
 # Start celery task
 @post('/task/follow_accounts')
@@ -213,8 +214,16 @@ def start_follow_accounts():
                 'status': 'OK',
                 'message': 'Task is already running'
             }
+
     # If not found, start it
-    task_follow_accounts()
+    try:
+        task_follow_accounts()
+    except Exception as e:
+        return {
+            'status': 'Error',
+            'message': str(e)
+        }
+
     return {
         'status': 'OK',
         'message': 'Task started'
