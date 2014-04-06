@@ -9,6 +9,8 @@ class Database:
             config.get('db', 'username'),
             config.get('db', 'password')
         ))
+
+        # Use underscore prefixed variables to keep them "private"
         self._cur = self._conn.cursor()
 
     # Iterator method
@@ -48,3 +50,25 @@ class Database:
             (user_id, )
         )
         self._conn.commit()
+
+    def add_tweet(self, user_id, tweet_data, screenshot_data):
+        tweet = {
+            'tweet_data': tweet_data,
+            'screenshot_data': screenshot_data
+        }
+
+        cur = self._cur
+        cur.execute(
+            'insert into tweets (user_id, tweet) values (%s, %s)',
+            (user_id, tweet,)
+        )
+        self._conn.commit()
+
+    # Deletes a tweet based on timestamp, which must be datetime object
+    def delete_tweet(self, user_id, timestamp):
+        cur = self._cur
+        cur.execute(
+            'delete from tweets where user_id = %s and time = %s',
+            (user_id, timestamp,)
+        )
+        cur._conn.commit()
