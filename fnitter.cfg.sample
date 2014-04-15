@@ -1,6 +1,7 @@
 [fnitter]
 # This is where all screenshots are stored. Should probably be an absolut path.
-media_path: media/
+media_path: /var/www/fnitter/media/
+media_url: /media
 
 # Twitter related settings
 consumer_key: # API Key

@@ -51,21 +51,16 @@ class Database:
         )
         self._conn.commit()
 
-    def add_tweet(self, user_id, tweet_data, screenshot_data):
-        tweet = {
-            'tweet_data': tweet_data,
-            'screenshot_data': screenshot_data
-        }
-
+    def log_screenshot(self, user_id, screenshot_data):
         cur = self._cur
         cur.execute(
             'insert into tweets (user_id, tweet) values (%s, %s)',
-            (user_id, tweet,)
+            (user_id, screenshot_data,)
         )
         self._conn.commit()
 
     # Deletes a tweet based on timestamp, which must be datetime object
-    def delete_tweet(self, user_id, timestamp):
+    def delete_screenshot(self, user_id, timestamp):
         cur = self._cur
         cur.execute(
             'delete from tweets where user_id = %s and time = %s',
