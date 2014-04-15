@@ -1,36 +1,41 @@
 from __future__ import absolute_import
-from sys import stderr
-from ConfigParser import SafeConfigParser as ConfigParser
 from json import loads
+from ConfigParser import SafeConfigParser as ConfigParser
 import tweepy
-from celery.utils.log import get_task_logger
 from Driver.celery import app
-from Driver.database import Database
+from celery.utils.log import get_task_logger
+from Tasks.take_screenshot import take_screenshot
 
 l = get_task_logger(__name__)
 
 config = ConfigParser()
 config.read(['fnitter.cfg'])
 
-db = Database(config)
-
 class StreamListener(tweepy.StreamListener):
     def on_status(self, tweet):
         l.info('Received status: %s' % tweet)
-        pass
 
     def on_error(self, status_code):
         l.error('Error: %s' % status_code)
-        pass
 
     def on_data(self, jsonData):
         data = loads(jsonData)
-        user = data.get('user')
-        l.info('Tweet by %s: %s' % (
-            user.get('name'), 
-            data.get('text'), 
-        ))
-        pass
+        if data.has_key('delete'):
+            l.info('tweet deleted')
+            return { 'status': 'Tweet deleted' }
+        else:
+            text = data.get('text')
+            user = data.get('user')
+            user_id = user.get('id')
+            screen_name = user.get('screen_name')
+
+        try:
+            screenshot = take_screenshot.apply_async((
+                user_id,
+                'https://twitter.com/'+screen_name
+            ))
+        except Exception as e:
+            l.error('take_screenshot task failed: %s' % str(e))
 
 @app.task
 def follow_accounts(account_list=[]):
@@ -49,21 +54,3 @@ def follow_accounts(account_list=[]):
 
     # return stream status when it ends
     return stream.running
-
-@app.task
-def take_screenshot(url, target_path):
-    # Take a screenshot and save it
-    from Driver.screenshot import Screenshot
-
-    s = Screenshot(
-        phantomjs_path = '/home/stemid/Development/fnitter/node_modules/phantomjs',
-        url = url,
-        output_dir = target_path
-    )
-    cmd_output = s._command_output.split('\n')[0]
-
-    l.info('Screenshot saved to %s' % cmd_output)
-    # I don't understand why PhantomJS had to remove process from Node, 
-    # since it's a global part of Node.js but it's completely absent here. 
-    # So I'm forced to use console.log and remove trailing newlines. 
-    return { 'output': cmd_output }
