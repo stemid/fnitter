@@ -1,7 +1,7 @@
 from __future__ import print_function, absolute_import
 from sys import stderr
 from ConfigParser import SafeConfigParser as ConfigParser
-from json import loads, dumps
+from json import loads, dumps, JSONEncoder
 from bottle import post, get, run, default_app, debug, response, request
 from celery.task.control import inspect
 from Driver.twitter import Twitter
@@ -19,6 +19,13 @@ twitter = Twitter(
 )
 
 db = Database(config)
+
+# Converting datetime objects for JSON
+class DateEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return JSONEncoder.default(self, obj)
 
 # Decorator to allow CORS
 def enable_cors(fn):
@@ -172,7 +179,7 @@ def get_task(task_name=None):
 
 # Helper function to actually start the task
 def task_follow_accounts(account_list):
-    from Driver.tasks import follow_accounts
+    from Tasks.follow_accounts import follow_accounts
     follow_accounts.apply_async((account_list,))
 
 # Start celery task
