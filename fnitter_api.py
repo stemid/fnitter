@@ -197,6 +197,10 @@ def start_task(task_name=None):
             'message': str(e)
         }
 
+    # Run the task
+    # TODO: Get arguments for task from GET params
+    # TODO: Perhaps a list to act as tuple?
+
 # Start celery task
 @delete('/tasks/<task_name>')
 @enable_cors
