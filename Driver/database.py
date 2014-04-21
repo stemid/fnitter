@@ -55,7 +55,7 @@ class Database:
         cur = self._cur
         cur.execute(
             'insert into tweets (user_id, tweet) values (%s, %s)',
-            (user_id, screenshot_data,)
+            (int(user_id), screenshot_data,)
         )
         self._conn.commit()
 
