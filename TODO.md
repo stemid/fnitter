@@ -7,3 +7,5 @@ Gör hantering a bakgrundsjobbet Driver.task.follow_accounts i webbgränssnittet
 Kanske även kunna se eventuella skärmdumpsjobb där men det känns onödigt i början. 
 
 Styr lyssnaren från första sidan där aktivitet ska visas. 
+
+Försök kombinera start_follow_accounts(), stop_follow_accounts och get_task. Åtminstone start och stop till toggle.
