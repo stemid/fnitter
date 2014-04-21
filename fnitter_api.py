@@ -1,4 +1,5 @@
 from __future__ import print_function, absolute_import
+from importlib import import_module
 from sys import stderr
 from ConfigParser import SafeConfigParser as ConfigParser
 from json import loads, dumps, JSONEncoder
@@ -131,100 +132,102 @@ def account_add(screen_name):
         'message': 'Account added'
     }
 
-# Get all celery tasks in a list
-# Get status of a celery task
-@get('/task')
-@get('/task/<task_name>')
-@enable_cors
-def get_task(task_name=None):
-    response.content_type = 'application/json'
-
+# Helper function used by /tasks in REST API
+def task_status(task_name=None):
     i = inspect()
     active_tasks = []
-    try:
-        active_tasks = i.active().get(
-            'celery@%s' % config.get('fnitter', 'worker_name')
-        )
-    except Exception as e:
-        response.status = 500
-        return {
-            'status': 'Error',
-            'message': str(e)
-        }
-
-    if not len(active_tasks):
-        response.status = 404
-        return {
-            'status': 'Not found',
-            'message': 'No tasks are running'
-        }
+    active_tasks = i.active().get(
+        'celery@%s' % config.get('fnitter', 'worker_name')
+    )
 
     if task_name is None:
-        return { 
-            'status': 'OK', 
-            'tasks': active_tasks 
-        }
+        if len(active_tasks):
+            return active_tasks
+        else:
+            return False
+    else:
+        for task in active_tasks:
+            if task.name == task_name and task.get('name', None) is not None:
+                return [ task ]
+    return False
 
-    for task in active_tasks:
-        if task_name == task.get('name'):
-            return { 
-                'status': 'OK',
-                'tasks': [ task ] 
-            }
-
-    return {
-        'status': 'Not found',
-        'message': 'Task not found'
-    }
-
-# Helper function to actually start the task
-def task_follow_accounts(account_list):
-    from Tasks.follow_accounts import follow_accounts
-    follow_accounts.apply_async((account_list,))
-
-# Start celery task
-@post('/task/follow_accounts')
+# Get task status
+@get('/tasks')
+@get('/tasks/<task_name>')
 @enable_cors
-def start_follow_accounts():
+def get_tasks(task_name=None):
     response.content_type = 'application/json'
-
-    accounts = []
-    for (user_id, account_data) in db:
-        accounts.append(user_id)
-
-    # Check if task is already running, we don't want more than one of these.
-    # Get current list of active tasks
-    active_tasks = []
     try:
-        active_tasks = i.active().get(
-            'celery@%s' % config.get('fnitter', 'worker_name')
-        )
+        status = task_status(task_name)
     except Exception as e:
-        response.status = 500
         return {
             'status': 'Error',
             'message': str(e)
         }
+    return status
 
-    if not len(active_tasks):
-        task_follow_accounts()
-        return {
-            'status': 'OK',
-            'message': 'Task started'
-        }
+# Start a task
+@post('/tasks/<task_name>')
+@enable_cors
+def start_task(task_name=None):
+    response.content_type = 'application/json'
 
-    # If we have several running tasks, check for its name
-    for task in active_tasks:
-        # If found, return from the loop
-        if task.name == 'Driver.tasks.follow_accounts':
+    # Check unique param
+    try:
+        unique = request.query.getall('unique')[0]
+    except Exception as e:
+        print(str(e), file=stderr)
+        unique = 'false'
+
+    # Check if it's already running
+    if unique == 'true':
+        status = task_status(task_name)
+        if status:
             return {
                 'status': 'OK',
                 'message': 'Task is already running'
             }
 
+    # Import the task to run
+    try:
+        task = import_module(task_name)
+    except Exception as e:
+        return {
+            'status': 'Error',
+            'message': str(e)
+        }
+
+# Start celery task
+@delete('/tasks/<task_name>')
+@enable_cors
+def stop_task():
+    from Tasks.follow_accounts import follow_accounts
+    response.content_type = 'application/json'
+
+    accounts = []
+    for (user_id, account_data) in db:
+        accounts.append(str(user_id))
+
+    # Check if task is already running, we don't want more than one of these.
+    else:
+        # If we have several running tasks, check for its name
+        for task in active_tasks:
+            # If found, return from the loop
+            try:
+                if task.name == 'Tasks.follow_accounts':
+                    return {
+                        'status': 'OK',
+                        'message': 'Task is already running'
+                    }
+            except Exception as e:
+                return {
+                    'status': 'Error',
+                    'message': str(e)
+                }
+
     # If not found, start it
     try:
-        task_follow_accounts()
+        follow_accounts.apply_async((accounts,))
     except Exception as e:
         return {
             'status': 'Error',
