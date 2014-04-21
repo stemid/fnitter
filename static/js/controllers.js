@@ -112,10 +112,63 @@ fnitterAppControllers.controller('fnitterManageTasksCtrl', [
   '$scope',
   '$http',
   '$log',
+  'fnitterSettings',
   
-  function ($scope, $http, $log) {
+  function ($scope, $http, $log, fnitterSettings) {
     // Make menu button active
     $('.list-group .active').toggleClass('active');
     $('.list-group').find('a[href$="/tasks"]').toggleClass('active');
+
+    $scope.listener_running = false;
+    $scope.listener_toggle_text = 'Starta lyssnaren';
+    $scope.listener_toggle = function () {};
+
+    $scope.listener_status = function () {
+      $http.get(fnitterSettings.apiUrl + '/tasks/Tasks.follow_accounts').
+      success(function (data, status) {
+        $scope.listener_toggle_text = 'Stoppa lyssnaren';
+        $scope.listener_running = true;
+        $('#listener-button').removeAttr('disabled');
+      }).
+      error(function (data, status) {
+        $scope.listener_toggle_text = 'Starta lyssnaren';
+        $scope.listener_running = false;
+      });
+    };
+    $scope.listener_status();
+
+    $scope.listener_toggle = function () {
+      $scope.listener_status();
+      if ($scope.listener_running === true) {
+        $http.delete(fnitterSettings.apiUrl + '/tasks/Tasks.follow_accounts').
+        success(function (data, status) {
+          $log.info('killed listener task');
+        }).
+        error(function (data, status) {
+          $log.error('failed killing listener task');
+        });
+      }
+    };
+
+    $scope.reload_tasks = function () {
+      $http.get(fnitterSettings.apiUrl + '/tasks').
+      success(function (data, status) {
+        $log.info(data);
+        $scope.tasks = data.tasks;
+      }).
+      error(function (data, status) {
+        $log.error(data);
+        $log.error(status);
+        $scope.tasks = [];
+      });
+    };
+
+    $scope.reload_tasks();
+
+    setTimeout(function () {
+      $log.info('updating tasks');
+      $scope.reload_tasks();
+      $scope.$apply();
+    }, 1000);
   }
 ]);
