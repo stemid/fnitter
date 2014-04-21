@@ -1,3 +1,20 @@
 <h1>Hantera jobb</h1>
 
+<button id="listener-button" class="btn btn-primary" ng-click="listener_toggle()" disabled>{{ listener_toggle_text }}</button>
 
+<table 
+  ng-init="sortKey='time_start'; reverse=!reverse"
+  class="table table-hover">
+  <thead>
+    <tr>
+      <td>Startad</td>
+      <td>Namn</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="task in tasks | filter:query | orderBy:sortKey:reverse">
+      <td>{{ task.time_start }}</td>
+      <td>{{ task.name }}</td>
+    </tr>
+  </tbody>
+</table>
