@@ -16,6 +16,7 @@ db = Database(config)
 
 @app.task
 def take_screenshot(user_id, url):
+    l.info('Taking screenshot of %s' % url)
     output_dir = '%s/%s' % (
         config.get('fnitter', 'media_path'),
         user_id
@@ -38,6 +39,7 @@ def take_screenshot(user_id, url):
     # since it's a global part of Node.js but it's completely absent here. 
     # So I'm forced to use console.log in JS and remove trailing newlines. 
     cmd_output = s._command_output.split('\n')[0]
+    l.info('Captured screenshot %s' % cmd_output)
 
     screenshot_data = {
         'filename': cmd_output,
@@ -55,7 +57,7 @@ def take_screenshot(user_id, url):
     try:
         db.log_screenshot(user_id, dumps(screenshot_data))
     except Exception as e:
-        l.error('db.add_tweet exception: %s' % str(e))
+        l.error('db.log_screenshot exception: %s' % str(e))
         return { 'status': 'Exception: %s' % str(e) }
 
     return { 'status': 'Screenshot saved' }
