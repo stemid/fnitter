@@ -87,7 +87,7 @@ fnitterAppControllers.controller('fnitterManageAccountCtrl',
 );
 
 fnitterAppControllers.controller('fnitterManageTasksCtrl', 
-  function ($scope, $http, $log, $timeout, fnitterSettings) {
+  function ($scope, $http, $log, $timeout, fnitterSettings, accountsSrv) {
     // Make menu button active
     $('.list-group .active').toggleClass('active');
     $('.list-group').find('a[href$="/tasks"]').toggleClass('active');
@@ -124,6 +124,14 @@ fnitterAppControllers.controller('fnitterManageTasksCtrl',
           $log.error('failed killing listener task');
         });
       } else {
+        // Get accounts list
+        $scope.accounts = accountsSrv.get();
+        var task_arguments = [];
+        $.each($scope.accounts, function (index, value) {
+          task_arguments.push(value.user_id);
+        });
+
+        $log.info(task_arguments);
         $http.post(
           fnitterSettings.apiUrl + '/tasks/Tasks.follow_accounts?unique=true',
           { data: task_arguments }

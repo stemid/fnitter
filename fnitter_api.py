@@ -3,7 +3,7 @@ from importlib import import_module
 from sys import stderr
 from ConfigParser import SafeConfigParser as ConfigParser
 from json import loads, dumps, JSONEncoder
-from bottle import post, get, run, default_app, debug, response, request
+from bottle import post, get, delete, run, default_app, debug, response, request
 from celery.task.control import inspect
 from Driver.twitter import Twitter
 from Driver.database import Database
@@ -141,15 +141,12 @@ def task_status(task_name=None):
     )
 
     if task_name is None:
-        if len(active_tasks):
-            return active_tasks
-        else:
-            return False
-    else:
+        return active_tasks
+    elif len(active_tasks):
         for task in active_tasks:
             if task.name == task_name and task.get('name', None) is not None:
                 return [ task ]
-    return False
+    raise ValueError('No tasks returned')
 
 # Get task status
 @get('/tasks')
@@ -160,6 +157,7 @@ def get_tasks(task_name=None):
     try:
         status = task_status(task_name)
     except Exception as e:
+        response.status = 404
         return {
             'status': 'Error',
             'message': str(e)
@@ -180,26 +178,49 @@ def start_task(task_name=None):
         unique = 'false'
 
     # Check if it's already running
+    tasks = []
     if unique == 'true':
-        status = task_status(task_name)
-        if status:
+        try:
+            tasks = task_status(task_name)
+        except ValueError:
+            pass
+        except Exception as e:
+            response.status = 500
+            return {
+                'status': 'Error',
+                'message': 'task_status: ' + str(e)
+            }
+        if len(tasks):
             return {
                 'status': 'OK',
                 'message': 'Task is already running'
             }
 
-    # Import the task to run
+    # Get task arguments from request.body
+    json_arguments = loads(request.body.read())
+    task_arguments = ()
+    for argument in json_arguments:
+        print(argument, file=stderr)
+        task_arguments += (str(argument),)
+    
     try:
-        task = import_module(task_name)
+        # Import @app method from task package
+        task_mod = import_module(task_name)
+        task = getattr(task_mod, task_name.split('.')[-1])
     except Exception as e:
+        response.status = 500
         return {
             'status': 'Error',
-            'message': str(e)
+            'message': 'import_module: ' + str(e)
         }
 
     # Run the task
-    # TODO: Get arguments for task from GET params
-    # TODO: Perhaps a list to act as tuple?
+    result = task.apply_async((task_arguments,))
+    print(result.task_id, file=stderr)
+    return {
+        'status': 'OK',
+        'message': 'Task applied'
+    }
 
 # Start celery task
 @delete('/tasks/<task_name>')
