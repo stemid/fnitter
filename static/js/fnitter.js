@@ -1,19 +1,16 @@
 'use strict';
 
-$(document).ready(function () {
-  $('[data-toggle=offcanvas]').click(function () {
-    $('.row-offcanvas').toggleClass('active')
-  });
-});
-
+// Starta angular.js appen
 var fnitterApp = angular.module('fnitterApp', [
   'ngRoute',
   'ui.bootstrap',
   'fnitterAppControllers'
 ]);
 
+// Detta måste ställas in till adressen för gränssnittet för att tillåta
+// anrop därifrån via CORS. 
 fnitterApp.constant('fnitterSettings', {
-  apiUrl: 'http://zakalwe:8000'
+  apiUrl: 'http://nattuggla:8000'
 });
 
 fnitterApp.config([
@@ -77,4 +74,11 @@ fnitterApp.service('accountsSrv', [
     };
   }
 ]);
+
+// Ej relaterat till angular
+$(document).ready(function () {
+  $('[data-toggle=offcanvas]').click(function () {
+    $('.row-offcanvas').toggleClass('active')
+  });
+});
 

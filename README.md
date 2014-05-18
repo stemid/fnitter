@@ -43,6 +43,10 @@ Installera PhantomJS globalt så här.
 
 På Debian blir det rättighetsfel, så det får man fixa i `/usr/local/lib/node_modules`. 
 
+# App konfiguration
+
+Redigera filerna fnitter.cfg och static/js/fnitter.js (se kommentaren).
+
 # Nginx konfiguration
 
 Här är ett exempel på en nginx konfiguration där fnitter applikationen ligger i nginx root under Development/fnitter. Det är den jag har för utveckling så den lyssnar på port 8001.
