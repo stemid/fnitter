@@ -10,7 +10,7 @@ var fnitterApp = angular.module('fnitterApp', [
 // Detta måste ställas in till adressen för gränssnittet för att tillåta
 // anrop därifrån via CORS. 
 fnitterApp.constant('fnitterSettings', {
-  apiUrl: 'http://nattuggla:8000'
+  apiUrl: 'http://localhost:8000'
 });
 
 fnitterApp.config([
